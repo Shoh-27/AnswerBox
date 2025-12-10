@@ -44,5 +44,33 @@ class AnswerController extends Controller
             ->with('success', 'New Q&A pair added successfully! The AI has learned.');
     }
 
+    /**
+     * Show edit form
+     */
+    public function edit($id)
+    {
+        $answer = Answer::with('prompt')->findOrFail($id);
+
+        return view('answers.edit', compact('answer'));
+    }
+
+    /**
+     * Update answer
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'answer' => 'required|string|min:3',
+        ]);
+
+        $answer = Answer::findOrFail($id);
+        $answer->update([
+            'answer' => $request->input('answer'),
+        ]);
+
+        return redirect()->route('history.index')
+            ->with('success', 'Answer updated successfully');
+    }
+
 
 }
