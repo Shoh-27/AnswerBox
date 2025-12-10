@@ -28,4 +28,11 @@ class PromptController extends Controller
         return view('home', compact('recentPrompts', 'favoritePrompts'));
     }
 
+    public function destroy($id)
+    {
+        $prompt = Prompt::findOrFail($id);
+        $prompt->delete();
+
+        return back()->with('success', 'Prompt deleted successfully');
+    }
 }
