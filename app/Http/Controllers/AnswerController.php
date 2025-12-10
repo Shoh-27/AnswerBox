@@ -72,5 +72,25 @@ class AnswerController extends Controller
             ->with('success', 'Answer updated successfully');
     }
 
+    /**
+     * Vote helpful
+     */
+    public function voteHelpful($id)
+    {
+        $answer = Answer::findOrFail($id);
+        $answer->voteHelpful();
 
+        return back()->with('success', 'Thank you for your feedback!');
+    }
+
+    /**
+     * Vote unhelpful
+     */
+    public function voteUnhelpful($id)
+    {
+        $answer = Answer::findOrFail($id);
+        $answer->voteUnhelpful();
+
+        return back()->with('success', 'Thank you for your feedback!');
+    }
 }
