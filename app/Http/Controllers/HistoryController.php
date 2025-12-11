@@ -44,18 +44,19 @@ class HistoryController extends Controller
         }
 
         $prompts = $query->paginate(20);
-//
-//        // Get statistics
-//        $stats = [
-//            'total_prompts' => Prompt::count(),
-//            'total_searches' => SimilarityLog::count(),
-//            'success_rate' => SimilarityLog::count() > 0
-//                ? round((SimilarityLog::where('found_match', true)->count() / SimilarityLog::count()) * 100, 1)
-//                : 0,
-//            'favorites' => Prompt::where('is_favorite', true)->count(),
-//        ];
 
-        return view('history.index', compact('prompts', 'search', 'filter'));
+        // Get statistics
+        $stats = [
+            'total_prompts' => Prompt::count(),
+            'total_searches' => SimilarityLog::count(),
+            'success_rate' => SimilarityLog::count() > 0
+                ? round((SimilarityLog::where('found_match', true)->count() / SimilarityLog::count()) * 100, 1)
+                : 0,
+            'favorites' => Prompt::where('is_favorite', true)->count(),
+        ];
+
+        return view('history.index', compact('prompts', 'stats' , 'search', 'filter'));
     }
+
 
 }
