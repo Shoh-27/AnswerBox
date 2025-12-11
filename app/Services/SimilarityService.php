@@ -54,5 +54,25 @@ class SimilarityService
         return $percent / 100;
     }
 
+    /**
+     * Combined score (weighted average)
+     */
+    public function combinedScore($a, $b)
+    {
+        $levScore = $this->computeLevenshtein($a, $b);
+        $simTextScore = $this->computeSimilarText($a, $b);
+
+        // Weighted average
+        $combined = ($levScore * $this->levWeight) + ($simTextScore * $this->simTextWeight);
+
+        // Normalize (since weights should sum to 1)
+        $totalWeight = $this->levWeight + $this->simTextWeight;
+        if ($totalWeight > 0) {
+            $combined = $combined / $totalWeight;
+        }
+
+        return round($combined, 4);
+    }
+
 
 }
