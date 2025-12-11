@@ -85,6 +85,17 @@ class PromptController extends Controller
         ]);
     }
 
+    /**
+     * Toggle favorite
+     */
+    public function toggleFavorite($id)
+    {
+        $prompt = Prompt::findOrFail($id);
+        $prompt->is_favorite = !$prompt->is_favorite;
+        $prompt->save();
+
+        return back()->with('success', 'Favorite status updated');
+    }
 
     /**
      * Delete prompt
