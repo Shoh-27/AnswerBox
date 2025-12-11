@@ -55,8 +55,19 @@ class HistoryController extends Controller
             'favorites' => Prompt::where('is_favorite', true)->count(),
         ];
 
-        return view('history.index', compact('prompts', 'stats' , 'search', 'filter'));
+        return view('history.index', compact('prompts', 'stats', 'search', 'filter'));
     }
 
+    /**
+     * Show similarity logs
+     */
+    public function logs(Request $request)
+    {
+        $logs = SimilarityLog::with('matchedPrompt')
+            ->orderBy('created_at', 'desc')
+            ->paginate(50);
+
+        return view('history.logs', compact('logs'));
+    }
 
 }
