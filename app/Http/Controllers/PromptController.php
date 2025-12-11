@@ -9,6 +9,13 @@ use Illuminate\Http\Request;
 
 class PromptController extends Controller
 {
+    protected $similarityService;
+
+    public function __construct(SimilarityService $similarityService)
+    {
+        $this->similarityService = $similarityService;
+    }
+
     /**
      * Show homepage
      */
@@ -28,6 +35,10 @@ class PromptController extends Controller
         return view('home', compact('recentPrompts', 'favoritePrompts'));
     }
 
+
+    /**
+     * Delete prompt
+     */
     public function destroy($id)
     {
         $prompt = Prompt::findOrFail($id);
