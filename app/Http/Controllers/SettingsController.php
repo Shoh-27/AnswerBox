@@ -26,5 +26,24 @@ class SettingsController extends Controller
         return view('settings.index', compact('settings', 'stats'));
     }
 
+    /**
+     * Update settings
+     */
+    public function update(Request $request)
+    {
+        $request->validate([
+            'similarity_threshold' => 'required|numeric|min:0|max:1',
+            'max_results' => 'required|integer|min:1|max:10',
+            'algorithm_weight_levenshtein' => 'required|numeric|min:0|max:1',
+            'algorithm_weight_similar_text' => 'required|numeric|min:0|max:1',
+        ]);
+
+        Setting::setValue('similarity_threshold', $request->input('similarity_threshold'));
+        Setting::setValue('max_results', $request->input('max_results'));
+        Setting::setValue('algorithm_weight_levenshtein', $request->input('algorithm_weight_levenshtein'));
+        Setting::setValue('algorithm_weight_similar_text', $request->input('algorithm_weight_similar_text'));
+
+        return back()->with('success', 'Settings updated successfully');
+    }
 
 }
