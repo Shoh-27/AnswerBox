@@ -46,4 +46,44 @@ class SettingsController extends Controller
         return back()->with('success', 'Settings updated successfully');
     }
 
+    /**
+     * Clear all data
+     */
+    public function clearData(Request $request)
+    {
+        $type = $request->input('type', 'logs');
+
+        switch ($type) {
+            case 'logs':
+                SimilarityLog::truncate();
+                $message = 'Similarity logs cleared';
+                break;
+            case 'all':
+                Prompt::truncate();
+                SimilarityLog::truncate();
+                $message = 'All data cleared';
+                break;
+            default:
+                $message = 'Invalid type';
+        }
+
+        return back()->with('success', $message);
+    }
+
+    /**
+     * Get database storage size (approximation)
+     */
+    private function getStorageSize()
+    {
+        $size = Prompt::count() * 500 + SimilarityLog::count() * 300; // Rough estimate in bytes
+
+        if ($size < 1024) {
+            return $size . ' B';
+        } elseif ($size < 1048576) {
+            return round($size / 1024, 2) . ' KB';
+        } else {
+            return round($size / 1048576, 2) . ' MB';
+        }
+    }
+
 }
