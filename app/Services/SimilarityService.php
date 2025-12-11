@@ -74,5 +74,66 @@ class SimilarityService
         return round($combined, 4);
     }
 
+    /**
+     * Find best matches for input prompt
+     * Returns array of matches with scores
+     */
+    public function findBestMatches($promptText, $limit = null)
+    {
+        $limit = $limit ?? $this->maxResults;
+        $promptText = mb_strtolower(trim($promptText));
 
+        // Get all prompts with their primary answers
+        $prompts = Prompt::with('primaryAnswer')->get();
+
+        $matches = [];
+
+        foreach ($prompts as $prompt) {
+            $score = $this->combinedScore($promptText, $prompt->normalized_question);
+
+            $matches[] = [
+                'id' => $prompt->id,
+                'question' => $prompt->question,
+                'answer' => $prompt->primaryAnswer ? $prompt->primaryAnswer->answer : 'No answer available',
+                'score' => $score,
+                'is_favorite' => $prompt->is_favorite,
+                'usage_count' => $prompt->usage_count,
+            ];
+        }
+
+        // Sort by score descending
+        usort($matches, function($a, $b) {
+            return $b['score'] <=> $a['score'];
+        });
+
+        // Get top matches
+        $topMatches = array_slice($matches, 0, $limit);
+
+        // Check if best match meets threshold
+        $found = !empty($topMatches) && $topMatches[0]['score'] >= $this->threshold;
+
+        return [
+            'found' => $found,
+            'threshold' => $this->threshold,
+            'results' => $found ? $topMatches : [],
+            'all_matches' => $matches, // For logging purposes
+        ];
+    }
+
+    /**
+     * Get current threshold
+     */
+    public function getThreshold()
+    {
+        return $this->threshold;
+    }
+
+    /**
+     * Set threshold
+     */
+    public function setThreshold($threshold)
+    {
+        $this->threshold = $threshold;
+        Setting::setValue('similarity_threshold', $threshold);
+    }
 }
